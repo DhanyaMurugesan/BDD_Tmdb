@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="b1e0d29f-d8bf-4d0d-a46b-f4796ca6ac15" activeEnvironment="Default" name="Posting Data" resourceRoot="" soapui-version="5.5.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:RestService" id="ea7c0734-45c1-48de-94c0-d0270114f1fc" wadlVersion="http://wadl.dev.java.net/2009/02" name="http://216.10.245.166" type="rest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart=""/><con:endpoints><con:endpoint>http://216.10.245.166</con:endpoint></con:endpoints><con:resource name="" path="/${#TestCase#resource}" id="fa7b53a4-8ae2-40ee-b131-e9974b190635"><con:settings/><con:parameters><con:parameter><con:name>key</con:name><con:value/><con:style>QUERY</con:style><con:default/><con:description xsi:nil="true"/></con:parameter></con:parameters><con:method name="1" id="6c015c9d-c538-464e-840a-bd91c9f638ad" method="POST"><con:settings/><con:parameters/><con:representation type="RESPONSE"><con:mediaType>application/json; charset=UTF-8</con:mediaType><con:status>200</con:status><con:params/></con:representation><con:representation type="REQUEST"><con:mediaType>application/json</con:mediaType><con:params/></con:representation><con:representation type="RESPONSE"><con:mediaType>application/json;charset=UTF-8</con:mediaType><con:status>200</con:status><con:params/><con:element xmlns:json="http://216.10.245.166/maps/api/place/add/json">json:Response</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Request 1" id="be380bed-ebf7-44f3-aa42-4043294fb9af" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>${#Project#endpoint}</con:endpoint><con:request/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters><entry key="key" value="${#Project#api_key}" xmlns="http://eviware.com/soapui/config"/></con:parameters><con:parameterOrder><con:entry>key</con:entry></con:parameterOrder></con:request></con:method></con:resource></con:interface><con:testSuite id="36b66243-6712-4cbf-b25b-85ecafdbf775" name="Adding Data"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="ddf86a05-d414-4e82-8855-62bca484323c" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Successfully posting the data" searchProperties="true"><con:settings/><con:testStep type="groovy" name="Extract total number of rows" id="9be8ae6a-090a-4e4e-b209-73f4f33b44ee"><con:settings/><con:config><script>import jxl.*
+testRunner.testCase.testSuite.project.setPropertyValue("endpoint","http://216.10.245.166")
+testRunner.testCase.testSuite.project.setPropertyValue("api_key","qaclick123")
+testRunner.testCase.setPropertyValue("resource","maps/api/place/add/json")
+Workbook workbook = Workbook.getWorkbook(new File("E:\\Input_Post\\input_data.xls"))
+
+Sheet sheet = workbook.getSheet(0)
+
+def rowCount = sheet.getRows().toString()
+testRunner.testCase.setPropertyValue("rowcount",rowCount)
+testRunner.testCase.setPropertyValue("loopcount","1")</script></con:config></con:testStep><con:testStep type="groovy" name="Extract data from excel" id="e60de0fb-ae98-4d4e-a093-0c82016d3584"><con:settings/><con:config><script>import jxl.*
+
+import jxl.write.*
+
+Workbook workbook = Workbook.getWorkbook(new File("E:\\Input_Post\\input_data.xls"))
+
+Sheet sheet = workbook.getSheet(0)
+
+
+def loopvalue=Integer.parseInt(testRunner.testCase.getPropertyValue("loopcount"))
+def latContent=sheet.getCell(0,loopvalue) 
+def latitude=latContent.getContents().toString()
+testRunner.testCase.setPropertyValue("lat", latitude)
+
+def longContent=sheet.getCell(1,loopvalue) 
+def longitude=longContent.getContents().toString()
+testRunner.testCase.setPropertyValue("long", longitude)
+
+def nameContent=sheet.getCell(2,loopvalue) 
+def name=nameContent.getContents().toString()
+testRunner.testCase.setPropertyValue("name", name)
+
+
+
+</script></con:config></con:testStep><con:testStep type="restrequest" name="Post data" id="4479a273-7948-4cca-b763-5fff0c07117c"><con:settings/><con:config service="http://216.10.245.166" resourcePath="/${#TestCase#resource}" methodName="1" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Post data" id="be380bed-ebf7-44f3-aa42-4043294fb9af" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>${#Project#endpoint}</con:endpoint><con:request>
+   {
+   	"location":{
+
+        "lat" : "${#TestCase#latitude}",
+
+        "lng" : "${#TestCase#longitude}"
+
+    },
+
+    "accuracy":50,
+
+    "name":"${#TestCase#name}",
+
+    "phone_number":"(+91) 983 893 3937",
+
+    "address" : "29, side layout, cohen 09",
+
+    "types": ["shoe park","shop"],
+
+    "website" : "http://google.com",
+
+    "language" : "French-IN"
+
+}
+</con:request><con:originalUri>http://216.10.245.166/maps/api/place/add/json</con:originalUri><con:assertion type="Simple Contains" id="0dbb95f7-19da-4a46-99d9-0277dd29c010" name="Contains"><con:configuration><token>OK</token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters><entry key="key" value="${#Project#api_key}" xmlns="http://eviware.com/soapui/config"/></con:parameters><con:parameterOrder><con:entry>key</con:entry></con:parameterOrder></con:restRequest></con:config></con:testStep><con:testStep type="groovy" name="Loop" id="f5b21d4e-41f8-4901-825e-d18b22efe292"><con:settings/><con:config><script>if( ++testRunner.testCase.getPropertyValue("loopcount") &lt; testRunner.testCase.getPropertyValue("rowCount") )
+{
+    testRunner.testCase.setPropertyValue("loopcount",++testRunner.testCase.getPropertyValue("loopcount"))
+    // Run the first test step in the loop
+    testRunner.gotoStepByName( "Extract data from excel" )
+    
+}
+</script></con:config></con:testStep><con:properties><con:property><con:name>rowcount</con:name><con:value>4</con:value></con:property><con:property><con:name>loopcount</con:name><con:value>3</con:value></con:property><con:property><con:name>lat</con:name><con:value>-33.383</con:value></con:property><con:property><con:name>long</con:name><con:value>33.425</con:value></con:property><con:property><con:name>name</con:name><con:value>White house</con:value></con:property><con:property><con:name>resource</con:name><con:value>maps/api/place/add/json</con:value></con:property></con:properties></con:testCase><con:properties/></con:testSuite><con:properties><con:property><con:name>endpoint</con:name><con:value>http://216.10.245.166</con:value></con:property><con:property><con:name>api_key</con:name><con:value>qaclick123</con:value></con:property></con:properties><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
